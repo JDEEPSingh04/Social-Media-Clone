@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Social Media App</title>
+    <link rel="stylesheet" href="/css/profilePage.css" />
+  </head>
+  <body>
+    <header>
+      <div class="nav">
+        <input type="checkbox" id="nav-check" />
+        <div class="nav-links">
+          <a href="/feed">Home Page</a>
+          <a href="/profile">My Profile</a>
+          <a href="/logout">LogOut</a>
+        </div>
+      </div>
+      <div class="container">
+        <div class="profile">
+          <div class="profile-image">
+            <img class="profile-pic" src="/images/uploads/<%= currUser.dp %>" alt="" />
+          </div>
+          <div class="profile-user-settings">
+            <h1 class="profile-user-name"><%= currUser.username %></h1>
+          </div>
+          <div class="profile-stats">
+            <ul>
+              <li>
+                <span class="profile-stat-count"
+                  ><%= currUser.posts.length %></span
+                >
+                posts
+              </li>
+            </ul>
+          </div>
+          <div class="profile-picture-change">
+            <a href="/changeProfile">Change Profile Picture</a>
+          </div>
+          <div class="profile-bio">
+            <p>
+              <span class="profile-real-name"><%= currUser.fullname %> </span>
+              <br />
+              <span class="profile-real-name">EMAIL </span>
+              <%= currUser.email %>
+            </p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main>
+      <div class="container">
+        <div class="gallery">
+          <% currUser.posts.forEach(function(post){ %>
+          <div class="gallery-item" tabindex="0">
+            <img
+              src="/images/uploads/<%= post.imageUrl %>"
+              class="gallery-image"
+              alt=""
+            />
+            <div class="gallery-item-info">
+              <ul>
+                <li class="gallery-item-likes">
+                  <span class="visually-hidden">Likes:</span
+                  ><i class="fas fa-heart" aria-hidden="true"></i> <%=
+                  post.likes.length %>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <% }) %>
+        </div>
+      </div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ChatPage</title>
+    <link rel="stylesheet" href="/css/chat.css" />
+    <link
+      href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+      id="bootstrap-css"
+    />
+  </head>
+  <body>
+    <div class="nav">
+      <input type="checkbox" id="nav-check" />
+      <div class="nav-links">
+        <a href="/feed">Home Page</a>
+        <a href="/profile">My Profile</a>
+        <a href="/logout">LogOut</a>
+      </div>
+    </div>
+    <div class="container">
+      <h3 class="text-center"><%= secondUser.fullname %></h3>
+      <div class="messaging">
+        <div class="inbox_msg">
+          <div class="mesgs">
+            <div class="msg_history">
+              <% messages.forEach((message)=>{ %> <%
+              if(message.senderId.username==secondUser.username){ %>
+              <div class="incoming_msg">
+                <div class="incoming_msg_img">
+                  <img
+                    class="profile-pic"
+                    src="/images/uploads/<%= currUser.dp %>"
+                    alt="profilePic"
+                  />
+                </div>
+                <div class="received_msg">
+                  <div class="received_withd_msg">
+                    <p><%= message.content%></p>
+                    <span class="time_date"><%= message.elapsedTime %></span>
+                  </div>
+                </div>
+              </div>
+              <% } else{ %>
+              <div class="outgoing_msg">
+                <div class="sent_msg">
+                  <p><%= message.content %></p>
+                  <span class="time_date"><%= message.elapsedTime %></span>
+                </div>
+              </div>
+              <% } %> <% }) %>
+            </div>
+            <div class="type_msg">
+              <form action="/message/<%= secondUser.username %>" method="POST">
+                <div class="input_msg_write">
+                  <input
+                    type="text"
+                    class="write_msg"
+                    placeholder="Type a message"
+                    name="content"
+                  />
+                  <button class="msg_send_btn" type="submit">
+                    <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- End Main Section -->
+  </body>
+</html>

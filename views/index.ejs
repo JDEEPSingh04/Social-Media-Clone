@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Instagram Login Page</title>
+    <link rel="stylesheet" href="/css/loginPage.css" />
+  </head>
+  <body>
+    <div class="wrapper">
+      <div class="header">
+        <div class="top">
+          <div class="logo">
+            <img src="/images/logo.webp" alt="Social-Media" style="width: 175px" />
+          </div>
+          <form action="/" method="POST">
+            <div class="form">
+              <div class="input_field">
+                <input
+                  type="text"
+                  placeholder="Phone number, username, or email"
+                  class="input"
+                  name="username"
+                />
+              </div>
+              <div class="input_field">
+                <input
+                  type="password"
+                  placeholder="Password"
+                  class="input"
+                  name="password"
+                />
+              </div>
+              <div class="btn">
+                <button class="submitBTN" type="submit">Log In</button>
+              </div>
+            </div>
+          </form>
+
+          <% if (error && error.length > 0) { %>
+          <div class="error">
+            <p><%= error %></p>
+          </div>
+          <% } %>
+
+        
+        </div>
+        <div class="signup">
+          <p>Don't have an account? <a href="/signUp">Sign up</a></p>
+        </div>
+        
+      </div>
+    </div>
+  </body>
+</html>

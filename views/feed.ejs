@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Feed Page</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+      integrity="sha512-+4zCK9k+qNFUR5X+cKL9EIR+ZOhtIloNl9GIKS57V1MyNsYpYcUrUeQc9vNfzsWfV28IaLL3i96P9sdNyeRssA=="
+      crossorigin="anonymous"
+    />
+    <link rel="stylesheet" href="/css/feedPage.css" />
+  </head>
+  <body>
+    <div class="nav">
+      <input type="checkbox" id="nav-check" />
+      <div class="nav-links">
+        <a href="/feed">Home Page</a>
+        <a href="/profile">My Profile</a>
+        <a href="/logout">LogOut</a>
+      </div>
+    </div>
+    <div class="content">
+      <div class="content_left">
+        <ul>
+          <li>
+            <a href="/profile">
+              <img
+                class="profile-pic"
+                src="images/uploads/<%= currUser.dp %>"
+              />
+              <span>Hey <%= currUser.username %>!!</span>
+            </a>
+          </li>
+        </ul>
+      </div>
+      <div class="content_center">
+        <div class="media_container">
+          <div class="share">
+            <form action="/upload" method="POST" enctype="multipart/form-data">
+              <div class="share_upSide">
+                <img
+                  class="profile-pic"
+                  src="images/uploads/<%= currUser.dp %>"
+                  alt="profile"
+                />
+                <input
+                  type="text"
+                  name="caption"
+                  placeholder="What's on your mind..?"
+                />
+              </div>
+              <hr />
+              <div class="share_downSide">
+                <div class="share_downSide_link">
+                  <label for="fileInput" class="file-label">
+                    <i class="fas fa-photo-video photo-video-icon"></i>
+                    <span>Upload Photo</span>
+                  </label>
+                  <input
+                    type="file"
+                    id="fileInput"
+                    name="file"
+                    style="display: none"
+                  />
+                </div>
+                <button type="submit" class="uploadBtn">Upload</button>
+              </div>
+            </form>
+          </div>
+          <% posts.forEach((post)=>{ %>
+
+          <div class="news_feed">
+            <div class="news_feed_title">
+              <img src="/images/uploads/<%= post.user.dp %>" alt="user" />
+              <div class="news_feed_title_content">
+                <p><%= post.user.username %></p>
+                <p><%= post.elapsedTime %> . <i class="fas fa-globe-americas"></i></p>
+              </div>
+            </div>
+            <div class="news_feed_description">
+              <p class="news_feed_subtitle"><%= post.caption %></p>
+              <img src="/images/uploads/<%= post.imageUrl %>" alt="sunflower" />
+            </div>
+
+            <div class="likes_area">
+              <div class="emojis">
+                <img src="/images/like.webp" alt="like" />
+                <span><%= post.likes.length %></span>
+              </div>
+            </div>
+
+            <div class="divider"><hr /></div>
+            <form action="/likes/<%= post._id %>" method="POST">
+              <div class="likes_buttons">
+                <div class="likes_buttons_links">
+                  <button type="submit">
+                    <i class="far fa-thumbs-up"></i>
+                    <span>Like</span>
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+          <% }) %>
+        </div>
+      </div>
+
+      <div class="content_right">
+        <div class="content_right_inner">
+          <div class="content_right_divider"></div>
+          <div class="contacts">
+            <h3>Contacts</h3>
+          </div>
+          <ul>
+            <% users.forEach((user)=>{ %> <%
+            if(user.username!=currUser.username){ %>
+            <li>
+              <a href="/chat/<%= user.username %>">
+                <img src="/images/uploads/<%= user.dp %>" alt="user" />
+                <span><%= user.username %></span>
+              </a>
+            </li>
+            <% } %> <% }) %>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
