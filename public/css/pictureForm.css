@@ -18,7 +18,7 @@ label {
   margin-bottom: 5px;
 }
 
-input[type="file"] {
+input[type='file'] {
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -48,4 +48,11 @@ button:hover {
   height: auto;
   max-height: 300px; /* Adjust maximum height as needed */
   display: none; /* Initially hide image */
+}
+
+.error {
+  font-weight: 500;
+  color: red;
+  text-transform: capitalize;
+  margin: 7px 0;
 }

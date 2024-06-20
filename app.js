@@ -60,8 +60,6 @@ app.use('/', authRoutes)
 io.on('connection', (socket) => {
   console.log('A user connected')
 
-
-
   // Handle disconnects
   socket.on('disconnect', () => {
     console.log('A user disconnected')
@@ -211,7 +209,7 @@ app.post('/likes/:postID', authenticateToken, async (req, res) => {
 
 // Choosing a new profile picture
 app.get('/changeProfile', authenticateToken, (req, res) => {
-  res.render('pictureForm')
+  res.render('pictureForm',{error:req.flash('error')})
 })
 
 // To upload the new profile picture
@@ -221,7 +219,8 @@ app.post(
   upload.single('file'),
   async (req, res) => {
     if (!req.file) {
-      return res.status(404).send('no files were given')
+      req.flash('error','No files chosen')
+      return res.redirect('/changeProfile')
     }
     const currUser = await User.findOne({
       username: req.user.username,

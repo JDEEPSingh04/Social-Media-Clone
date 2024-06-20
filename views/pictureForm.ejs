@@ -17,6 +17,11 @@
         </div>
         <button type="submit">Upload</button>
       </form>
+      <% if (error && error.length > 0) { %>
+          <div class="error">
+            <p><%= error %></p>
+          </div>
+          <% } %>
       <div id="profile-picture-preview" class="profile-picture-preview">
         <img id="preview-image" src="#" alt="Preview Image" />
       </div>
