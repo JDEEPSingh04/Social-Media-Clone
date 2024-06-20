@@ -127,7 +127,7 @@ body {
 
 .profile-pic {
   border-radius: 40%;
-  width: 100px;
+  width: 150px;
   height: 150px;
 }
 
@@ -178,7 +178,7 @@ body {
 
 .profile-picture-change a {
   display: block;
-  
+
   text-decoration: none;
   color: #efefef;
 }
