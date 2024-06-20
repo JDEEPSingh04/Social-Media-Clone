@@ -7,26 +7,41 @@ require('dotenv').config()
 
 const JWT_SECRET = process.env.JWT_SECRET
 DefaultProfile=process.env.DEFAULT_PROFILE
+
+// Function to generate JWT token
 const generateAccessToken = (user) => {
   return jwt.sign(user, JWT_SECRET, { expiresIn: '1h' })
 }
 
+// Route for user signup
 router.post('/signUp', async (req, res) => {
   const { username, password,email,fullname } = req.body
   console.log(username)
   console.log(password)
   try {
     const existingUser = await User.findOne({ username })
+    // Check if the username already exists
     if (existingUser) {
       req.flash('error', 'Username already exists')
       return res.redirect('/signUp')
     }
 
+    // Hash the password
     const hashedPassword = await bcrypt.hash(password, 10)
 
-    const newUser = new User({ username, password: hashedPassword,email:email,fullname:fullname,dp:DefaultProfile })
+    // Create a new user instance
+    const newUser = new User({
+      username,
+      password: hashedPassword,
+      email: email,
+      fullname: fullname,
+      dp: DefaultProfile,
+    })
     await newUser.save()
+
+    // Generate JWT token for the user
     const token = generateAccessToken({ username: newUser.username })
+
     // Store token in cookies
     res.cookie('jwt', token, { httpOnly: true })
     res.redirect('/feed')
@@ -60,7 +75,6 @@ router.post('/', async (req, res) => {
     res.cookie('jwt', token, { httpOnly: true })
     // Login successful
     res.redirect('/feed')
-    // res.status(200).send('Login successful')
   } catch (error) {
     req.flash('error', 'User not found')
     return res.redirect('/')

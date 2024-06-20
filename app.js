@@ -4,7 +4,6 @@ const app = express()
 const path = require('path')
 const authRoutes = require('./controllers/authRoutes')
 const bodyParser = require('body-parser')
-const session = require('express-session')
 const flash = require('express-flash')
 const jwt = require('jsonwebtoken')
 const upload = require('./controllers/multer')
@@ -13,7 +12,7 @@ const moment = require('moment')
 require('dotenv').config()
 
 const uri = process.env.URL
-
+// To connect to mongo
 mongoose.connect(uri)
 
 const db = mongoose.connection
@@ -26,10 +25,13 @@ db.once('open', () => {
   console.log('Connected to MongoDB Atlas')
 })
 
+// Models
 const User = require('./models/userModel')
 const Post = require('./models/postModel')
 const Message = require('./models/messageModel')
 
+
+// View engine setup
 app.set('view engine', 'ejs')
 app.set('views', path.join(__dirname, 'views'))
 app.use(express.static(path.join(__dirname, 'public')))
@@ -39,20 +41,14 @@ app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
 
-app.use(
-  session({
-    secret: 'SECRET', // Change this to a secure random string
-    resave: false,
-    saveUninitialized: false,
-  })
-)
-
+// To use flash messages
 app.use(flash())
 
+// Authentication (Login and Sigh Up) routes
 const JWT_SECRET = process.env.JWT_SECRET
 app.use('/', authRoutes)
-// app.use('/', userRoutes)
 
+// To check if user is logged in
 const authenticateToken = (req, res, next) => {
   const token = req.cookies.jwt
 
@@ -61,19 +57,20 @@ const authenticateToken = (req, res, next) => {
     jwt.verify(token, JWT_SECRET, (err, decodedToken) => {
       if (err) {
         console.error(err.message)
-        res.redirect('/') // Redirect to login page or handle unauthorized access
-      } else {
+        res.redirect('/') 
+      } 
+      else {
         // Token is valid, attach decoded user information to request object
         req.user = decodedToken
-        next() // Proceed to the next middleware or route handler
+        next() 
       }
     })
   } else {
-    // No token found, redirect to login page or handle unauthorized access
     res.redirect('/')
   }
 }
 
+// Login and SignUp routes
 app.get('/', (req, res) => {
   res.render('index', { error: req.flash('error') })
 })
@@ -82,14 +79,15 @@ app.get('/signUp', (req, res) => {
   res.render('SignUp', { error: req.flash('error') })
 })
 
+// authenticationToken used as middleware to check if user is logged in
 app.get('/profile', authenticateToken, async (req, res) => {
   const currUser = await User.findOne({
     username: req.user.username,
   }).populate('posts')
-  console.log(currUser.dp)
   res.render('profile', { currUser })
 })
 
+// Uploading a new post
 app.post(
   '/upload',
   authenticateToken,
@@ -113,6 +111,7 @@ app.post(
   }
 )
 
+// Feed page
 app.get('/feed', authenticateToken, async (req, res) => {
   const Posts = await Post.find().populate('user').sort({ postedDate: -1 })
   const users = await User.find()
@@ -129,6 +128,7 @@ app.get('/feed', authenticateToken, async (req, res) => {
   res.render('feed', { posts, users, currUser })
 })
 
+// Chat page with individual users
 app.get('/chat/:userID', authenticateToken, async (req, res) => {
   const currUser = await User.findOne({
     username: req.user.username,
@@ -155,6 +155,7 @@ app.get('/chat/:userID', authenticateToken, async (req, res) => {
   res.render('chat', { messages, secondUser, currUser })
 })
 
+// Send a new message
 app.post('/message/:userID', authenticateToken, async (req, res) => {
   const sender = await User.findOne({
     username: req.user.username,
@@ -172,6 +173,7 @@ app.post('/message/:userID', authenticateToken, async (req, res) => {
   res.redirect(`/chat/${req.params.userID}`)
 })
 
+// To like a post
 app.post('/likes/:postID', authenticateToken, async (req, res) => {
   const post = await Post.findById(req.params.postID)
   const currUser = await User.findOne({
@@ -182,10 +184,12 @@ app.post('/likes/:postID', authenticateToken, async (req, res) => {
   res.redirect('/feed')
 })
 
+// Choosing a new profile picture
 app.get('/changeProfile', authenticateToken, (req, res) => {
   res.render('pictureForm')
 })
 
+// To upload the new profile picture
 app.post(
   '/updateProfile',
   authenticateToken,

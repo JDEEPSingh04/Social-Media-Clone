@@ -1,6 +1,9 @@
 const mongoose = require('mongoose')
+
+// To set up a defualt profile picture for all users
 DEFAULT_PROFILE = "userProfile.jpg"
 
+// Defining the schema for User
 const userSchema = new mongoose.Schema({
   username: {
     type: String,
@@ -13,7 +16,7 @@ const userSchema = new mongoose.Schema({
   },
   posts: [
     {
-      type: mongoose.Schema.Types.ObjectId,
+      type: mongoose.Schema.Types.ObjectId, // To save Post id in the user model
       ref: 'Post',
     },
   ],
@@ -32,6 +35,7 @@ const userSchema = new mongoose.Schema({
   },
 })
 
+// Creating a User model based on the messageSchema
 const User = mongoose.model('User', userSchema)
 
 module.exports = User
