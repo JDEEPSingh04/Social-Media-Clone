@@ -1,12 +1,12 @@
-const User = require('../models/userModel')
-const bcrypt = require('bcrypt')
-const express=require('express')
+const User = require('../models/userModel') // User Model
+const bcrypt = require('bcrypt') 
+const express = require('express')
 const router = express.Router()
 const jwt = require('jsonwebtoken')
 require('dotenv').config()
 
-const JWT_SECRET = process.env.JWT_SECRET
-DefaultProfile=process.env.DEFAULT_PROFILE
+const JWT_SECRET = process.env.JWT_SECRET // Secret for JWT
+DefaultProfile = process.env.DEFAULT_PROFILE // URL for default profile pic
 
 // Function to generate JWT token
 const generateAccessToken = (user) => {
@@ -15,14 +15,12 @@ const generateAccessToken = (user) => {
 
 // Route for user signup
 router.post('/signUp', async (req, res) => {
-  const { username, password,email,fullname } = req.body
-  console.log(username)
-  console.log(password)
+  const { username, password, email, fullname } = req.body
   try {
     const existingUser = await User.findOne({ username })
     // Check if the username already exists
     if (existingUser) {
-      req.flash('error', 'Username already exists')
+      req.flash('error', 'Username already exists') // To send error message to the frontEnd
       return res.redirect('/signUp')
     }
 
@@ -55,8 +53,6 @@ router.post('/signUp', async (req, res) => {
 // Login route
 router.post('/', async (req, res) => {
   const { username, password } = req.body
-  console.log(username)
-  console.log(password)
   try {
     // Check if the username exists
     const user = await User.findOne({ username })

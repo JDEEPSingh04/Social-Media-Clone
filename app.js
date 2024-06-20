@@ -1,14 +1,18 @@
 const express = require('express')
-const cookieParser = require('cookie-parser')
 const app = express()
+const cookieParser = require('cookie-parser')
 const path = require('path')
 const authRoutes = require('./controllers/authRoutes')
 const bodyParser = require('body-parser')
+const session = require('express-session')
 const flash = require('express-flash')
 const jwt = require('jsonwebtoken')
 const upload = require('./controllers/multer')
 const mongoose = require('mongoose')
 const moment = require('moment')
+const { Server } = require('socket.io')
+const server = require('http').createServer(app)
+const io = new Server(server)
 require('dotenv').config()
 
 const uri = process.env.URL
@@ -16,11 +20,9 @@ const uri = process.env.URL
 mongoose.connect(uri)
 
 const db = mongoose.connection
-
 db.on('error', (err) => {
   console.error('MongoDB connection error:', err)
 })
-
 db.once('open', () => {
   console.log('Connected to MongoDB Atlas')
 })
@@ -29,7 +31,6 @@ db.once('open', () => {
 const User = require('./models/userModel')
 const Post = require('./models/postModel')
 const Message = require('./models/messageModel')
-
 
 // View engine setup
 app.set('view engine', 'ejs')
@@ -40,6 +41,13 @@ app.use(cookieParser())
 
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use(
+  session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: false,
+  })
+)
 
 // To use flash messages
 app.use(flash())
@@ -47,6 +55,18 @@ app.use(flash())
 // Authentication (Login and Sigh Up) routes
 const JWT_SECRET = process.env.JWT_SECRET
 app.use('/', authRoutes)
+
+
+io.on('connection', (socket) => {
+  console.log('A user connected')
+
+
+
+  // Handle disconnects
+  socket.on('disconnect', () => {
+    console.log('A user disconnected')
+  })
+})
 
 // To check if user is logged in
 const authenticateToken = (req, res, next) => {
@@ -57,12 +77,11 @@ const authenticateToken = (req, res, next) => {
     jwt.verify(token, JWT_SECRET, (err, decodedToken) => {
       if (err) {
         console.error(err.message)
-        res.redirect('/') 
-      } 
-      else {
+        res.redirect('/')
+      } else {
         // Token is valid, attach decoded user information to request object
         req.user = decodedToken
-        next() 
+        next()
       }
     })
   } else {
@@ -121,8 +140,8 @@ app.get('/feed', authenticateToken, async (req, res) => {
   const posts = Posts.map((post) => {
     const elapsedTime = moment(post.postedDate).fromNow()
     return {
-      ...post.toObject(), 
-      elapsedTime, 
+      ...post.toObject(),
+      elapsedTime,
     }
   })
   res.render('feed', { posts, users, currUser })
@@ -145,7 +164,7 @@ app.get('/chat/:userID', authenticateToken, async (req, res) => {
     .sort({ timestamp: 1 }) // Sort by timestamp in ascending order
     .populate('senderId')
     .populate('recieverId')
-  const messages=Messages.map((message)=>{
+  const messages = Messages.map((message) => {
     const elapsedTime = moment(message.timestamp).fromNow()
     return {
       ...message.toObject(),
@@ -170,6 +189,12 @@ app.post('/message/:userID', authenticateToken, async (req, res) => {
     content: content,
   })
   await newMessage.save()
+  io.emit('newMessage',{
+    sender:sender.username,
+    reciever:reciever.username,
+    content:content,
+    elapsedTime:'few seconds ago'
+  })
   res.redirect(`/chat/${req.params.userID}`)
 })
 
@@ -198,7 +223,6 @@ app.post(
     if (!req.file) {
       return res.status(404).send('no files were given')
     }
-    console.log('Hii')
     const currUser = await User.findOne({
       username: req.user.username,
     })
@@ -208,4 +232,4 @@ app.post(
   }
 )
 
-app.listen(3000)
+server.listen(3000)

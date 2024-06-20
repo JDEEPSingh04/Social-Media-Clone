@@ -21,11 +21,11 @@
       </div>
     </div>
     <div class="container">
-      <h3 class="text-center"><%= secondUser.fullname %></h3>
+      <h3 class="text-center">Chatting with <%= secondUser.fullname %></h3>
       <div class="messaging">
         <div class="inbox_msg">
           <div class="mesgs">
-            <div class="msg_history">
+            <div class="msg_history" id="allMessages">
               <% messages.forEach((message)=>{ %> <%
               if(message.senderId.username==secondUser.username){ %>
               <div class="incoming_msg">
@@ -53,18 +53,27 @@
               <% } %> <% }) %>
             </div>
             <div class="type_msg">
-              <form action="/message/<%= secondUser.username %>" method="POST">
+              <form
+                action="/message/<%= secondUser.username %>"
+                method="POST"
+                id="sendMsg"
+              >
                 <div class="input_msg_write">
                   <input
                     type="text"
                     class="write_msg"
                     placeholder="Type a message"
                     name="content"
+                    id="message-content"
                   />
                   <button class="msg_send_btn" type="submit">
                     <i class="fa fa-paper-plane-o" aria-hidden="true"></i>
                   </button>
                 </div>
+                <input type="hidden" id="user1" value="<%= secondUser.username %>">
+                <input type="hidden" id="user2" value="<%= currUser.username %>">
+                <input type="hidden" id="dp1" value="<%= secondUser.dp %>">
+                <input type="hidden" id="dp2" value="<%= currUser.dp %>">
               </form>
             </div>
           </div>
@@ -72,5 +81,7 @@
       </div>
     </div>
     <!-- End Main Section -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/chat.js"></script>
   </body>
 </html>
